@@ -14,23 +14,17 @@
   
   <title>Quickshares | Free Secure Anonymous File Sharing (No Login)</title>
   <meta name="title" content="Quickshares | Free Secure Anonymous File Sharing (No Login)">
-  <meta name="description" content="Send files securely and anonymously without logging in. Free encrypted file transfer up to 40MB. Auto-deletes after 5 minutes. Best WeTransfer alternative.">
-  <meta name="keywords" content="anonymous file sharing, no login file transfer, secure file upload, encrypted file sharing, send files with PIN, ephemeral file storage, free file sharing">
-  <meta name="author" content="Quickshares.online">
+  <meta name="description" content="Send files securely and anonymously without logging in. Free encrypted file transfer up to 40MB. Auto-deletes after 5 minutes.">
+  <meta name="keywords" content="anonymous file sharing, no login file transfer, secure file upload, encrypted file sharing, send files with PIN, ephemeral file storage">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://quickshares.online/">
 
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://quickshares.online/">
-  <meta property="og:title" content="Quickshares - Share Files Anonymously & Securely">
+  <meta property="og:title" content="Quickshares - Share Files Anonymously">
   <meta property="og:description" content="No Login. No Tracking. Encrypted file transfer that auto-deletes in 5 minutes.">
-  <meta property="og:image" content="https://i.ibb.co/3YFJ4DvG/image.png">
-
-  <meta property="twitter:card" content="summary_large_image">
-  <meta property="twitter:url" content="https://quickshares.online/">
-  <meta property="twitter:title" content="Quickshares - Share Files Anonymously">
-  <meta property="twitter:description" content="No Login. No Tracking. Encrypted file transfer that auto-deletes in 5 minutes.">
-  <meta property="twitter:image" content="https://i.ibb.co/3YFJ4DvG/image.png">
+  <meta property="og:image" content="https://quickshares.online/fileshare/assets/Logo.png">
+  <meta property="twitter:image" content="https://quickshares.online/fileshare/assets/Logo.png">
 
   <script type="application/ld+json">
   {
@@ -40,23 +34,14 @@
     "applicationCategory": "UtilitiesApplication",
     "operatingSystem": "Web Browser",
     "url": "https://quickshares.online",
-    "offers": {
-      "@type": "Offer",
-      "price": "0",
-      "priceCurrency": "USD"
-    },
-    "description": "Free, secure, and anonymous file sharing. Transfer files up to 40MB with PIN protection and auto-deletion after 5 minutes. No login required.",
-    "featureList": "End-to-end encryption, PIN protection, Auto-delete, No registration",
-    "softwareRequirements": "Modern Web Browser",
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "4.9",
-      "ratingCount": "120"
-    }
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "description": "Free, secure, and anonymous file sharing. Transfer files up to 40MB with PIN protection and auto-deletion after 5 minutes.",
+    "featureList": "End-to-end encryption, PIN protection, Auto-delete",
+    "softwareRequirements": "Modern Web Browser"
   }
   </script>
 
-  <link rel="icon" href="https://i.ibb.co/N2rxdx5B/favicon.png" type="image/png">
+  <link rel="icon" href="fileshare/assets/Logo.png" type="image/png">
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
@@ -97,14 +82,30 @@
 
     .container { max-width: 1000px; margin: 0 auto; padding: 20px; position: relative; z-index: 10; }
 
-    /* Header */
+    /* Header Styling */
     header { text-align: center; padding: 30px 0; margin-bottom: 20px; }
-    .logo-img { height: 60px; margin-bottom: 15px; filter: drop-shadow(0 0 15px rgba(99, 102, 241, 0.5)); }
+    
+    .logo-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+    }
+    
+    .logo-img { 
+      height: 70px; 
+      width: auto;
+      filter: drop-shadow(0 0 15px rgba(99, 102, 241, 0.5)); 
+      transition: transform 0.3s;
+    }
+    .logo-img:hover { transform: scale(1.05); }
+
     h1 {
       font-size: 2.5rem; font-weight: 800;
       background: linear-gradient(135deg, #fff 0%, #cbd5e1 100%);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      margin-bottom: 10px; letter-spacing: -1px;
+      margin: 0; letter-spacing: -1px;
     }
 
     /* Menus */
@@ -118,7 +119,6 @@
     }
     .menu-card:hover { transform: translateY(-10px); border-color: rgba(255, 255, 255, 0.3); }
 
-    /* Icon Animation */
     .icon-wrapper {
       width: 100px; height: 100px; border-radius: 50%;
       background: rgba(255, 255, 255, 0.05);
@@ -139,7 +139,7 @@
     .menu-card h3 { font-size: 1.8rem; margin-bottom: 10px; font-weight: 700; color: white; }
     .menu-card p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.5; }
 
-    /* Forms & Glass Panels */
+    /* Forms */
     .section { display: none; animation: fadeInUp 0.5s ease-out; }
     .section.active { display: block; }
     @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -216,6 +216,8 @@
       text-align: center; padding: 40px 0; color: var(--text-muted);
       font-size: 0.85rem; border-top: 1px solid var(--glass-border); margin-top: 20px;
     }
+    footer a { color: var(--text-muted); text-decoration: none; transition: color 0.3s; }
+    footer a:hover { color: var(--primary); }
 
     .spinner {
       width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3);
@@ -241,8 +243,10 @@
 <div class="container">
   
   <header>
-    <img src="https://i.ibb.co/3YFJ4DvG/image.png" alt="Quickshares Logo - Secure File Sharing" class="logo-img">
-    <h1>Quickshares.online</h1>
+    <div class="logo-container">
+      <img src="fileshare/assets/Logo.png" alt="Quickshares Logo" class="logo-img">
+      <h1>Quickshares.online</h1>
+    </div>
   </header>
 
   <div class="main-menu" id="mainMenu">
@@ -333,25 +337,21 @@
     </div>
   </div>
 
-  <section class="seo-text" id="about">
+  <section class="seo-text">
     <h2>How to Share Files Securely and Anonymously</h2>
-    <p>Quickshares.online is the best <strong>free no-login file sharing platform</strong>. Unlike Google Drive or Dropbox, you do not need to create an account or provide an email address. Simply upload your file, create a PIN, and share securely.</p>
-    
-    <h3>Why use our Encrypted File Transfer?</h3>
+    <p>Quickshares.online is the best <strong>free no-login file sharing platform</strong>. Simply upload your file, create a PIN, and share securely.</p>
     <ul>
       <li><strong>Zero Knowledge:</strong> We cannot see your files. They are encrypted end-to-end.</li>
       <li><strong>Ephemeral Storage:</strong> Files are <em>auto-deleted</em> after 5 minutes for privacy.</li>
       <li><strong>PIN Protection:</strong> Only the person with the 4-digit PIN can download.</li>
     </ul>
-    
-    <h3>Best Alternative to WeTransfer for Small Files</h3>
-    <p>If you need to send a quick PDF, image, or document securely without leaving a digital footprint, use our <strong>instant file upload</strong> tool.</p>
   </section>
 
 </div>
 
 <footer>
   <p>&copy; 2026 Quickshares.online | Free Anonymous File Sharing</p>
+  <p style="margin-top:10px;"><a href="privacy.html">Privacy Policy</a></p>
 </footer>
 
 <script>
@@ -484,21 +484,11 @@ verifyBtn.onclick = async () => {
   verifyBtn.innerHTML = `<span class="material-icons">no_encryption</span> Decrypt & View`;
   verifyBtn.disabled = false;
   
-  // Pass signed URL, Display Name, and Original Path (for extension check)
-  showFile(urlData.signedUrl, data[0].fake_name, data[0].file_path);
+  showFile(urlData.signedUrl, data[0].fake_name);
 };
 
-/* ================= SHOW FILE & PRINT ================= */
-function showFile(url, displayName, originalPath) {
-  // Check extension on ORIGINAL path to ensure correct viewer
-  const fileToCheck = originalPath || displayName; 
-  const isImage = /\.(jpg|jpeg|png|gif|webp|svg|bmp|avif)$/i.test(fileToCheck);
-  
-  // HTML for the preview box (Responsive Image vs Iframe)
-  const content = isImage 
-    ? `<img src="${url}" class="responsive-img" alt="Encrypted Image Preview">` 
-    : `<iframe src="${url}" class="responsive-iframe" title="Document Preview"></iframe>`;
-
+/* ================= IMPROVED SHOW FILE (No Guessing, Just Loading) ================= */
+function showFile(url, displayName) {
   downloadResult.innerHTML = `
     <div class="result-box result-success animate__animated animate__fadeIn">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
@@ -506,17 +496,38 @@ function showFile(url, displayName, originalPath) {
         <span style="font-size:0.8rem; opacity:0.7;">${displayName}</span>
       </div>
       
-      <div class="preview-container">${content}</div>
+      <div class="preview-container" id="mediaContainer">
+        <div class="spinner"></div>
+      </div>
       
       <div style="display:grid; gap:10px; grid-template-columns: 1fr 1fr;">
         <button class="btn btn-glow" onclick="downloadFile('${url}','${displayName}')">
           <span class="material-icons">download</span> Save
         </button>
-        <button class="btn btn-outline" onclick="triggerDirectPrint('${url}', ${isImage})">
+        <button class="btn btn-outline" onclick="triggerDirectPrint('${url}')">
           <span class="material-icons">print</span> Print
         </button>
       </div>
     </div>`;
+
+  // 1. Try to load as an image FIRST
+  const img = new Image();
+  img.src = url;
+  img.className = 'responsive-img'; // Uses object-fit: contain CSS
+  img.alt = "File Preview";
+  
+  img.onload = function() {
+    // It IS an image! Show it.
+    const container = document.getElementById('mediaContainer');
+    container.innerHTML = ''; // Clear spinner
+    container.appendChild(img);
+  };
+
+  img.onerror = function() {
+    // It is NOT an image (PDF, Doc, etc). Switch to Iframe.
+    const container = document.getElementById('mediaContainer');
+    container.innerHTML = `<iframe src="${url}" class="responsive-iframe" title="Document Preview"></iframe>`;
+  };
 }
 
 function handleError(container, msg, btn, btnText) {
@@ -543,27 +554,26 @@ async function downloadFile(url, name) {
   setTimeout(() => btn.innerHTML = `<span class="material-icons">download</span> Save`, 2000);
 }
 
-/* ================= DIRECT PRINT FUNCTION (BLOB METHOD) ================= */
-async function triggerDirectPrint(url, isImage) {
+/* ================= DIRECT PRINT FUNCTION ================= */
+async function triggerDirectPrint(url) {
   const btn = event.target.closest('button');
   const originalText = btn.innerHTML;
   btn.innerHTML = `<div class="spinner"></div>`;
   
   try {
-    // 1. Fetch file as BLOB
     const response = await fetch(url);
     const blob = await response.blob();
     const blobUrl = URL.createObjectURL(blob);
 
-    // 2. Create hidden iframe
     const iframe = document.createElement('iframe');
     iframe.style.position = 'absolute';
     iframe.style.top = '-9999px';
     iframe.style.left = '-9999px';
     document.body.appendChild(iframe);
 
-    // 3. Load Blob URL
-    if (isImage) {
+    // Try to detect type for printing
+    const type = blob.type;
+    if (type.startsWith('image/')) {
       iframe.contentDocument.write(`
         <html><body style="margin:0; display:flex; justify-content:center; align-items:center; height:100vh;">
           <img src="${blobUrl}" style="max-width:100%; max-height:100%; object-fit:contain;">
@@ -573,7 +583,6 @@ async function triggerDirectPrint(url, isImage) {
       iframe.src = blobUrl;
     }
 
-    // 4. Print when loaded
     iframe.onload = function() {
       setTimeout(() => {
         iframe.contentWindow.focus();
