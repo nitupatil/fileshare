@@ -17,14 +17,15 @@
   <meta name="description" content="Send files securely and anonymously without logging in. Free encrypted file transfer up to 40MB. Auto-deletes after 5 minutes.">
   <meta name="keywords" content="anonymous file sharing, no login file transfer, secure file upload, encrypted file sharing, send files with PIN, ephemeral file storage">
   <meta name="robots" content="index, follow">
-  <link rel="canonical" href="https://quickshares.online/">
+  
+  <link rel="canonical" href="https://nitupatil.github.io/fileshare/">
 
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://quickshares.online/">
+  <meta property="og:url" content="https://nitupatil.github.io/fileshare/">
   <meta property="og:title" content="Quickshares - Share Files Anonymously">
   <meta property="og:description" content="No Login. No Tracking. Encrypted file transfer that auto-deletes in 5 minutes.">
-  <meta property="og:image" content="https://quickshares.online/fileshare/assets/Logo.png">
-  <meta property="twitter:image" content="https://quickshares.online/fileshare/assets/Logo.png">
+  <meta property="og:image" content="https://nitupatil.github.io/fileshare/assets/Logo.png">
+  <meta property="twitter:image" content="https://nitupatil.github.io/fileshare/assets/Logo.png">
 
   <script type="application/ld+json">
   {
@@ -33,7 +34,7 @@
     "name": "Quickshares.online",
     "applicationCategory": "UtilitiesApplication",
     "operatingSystem": "Web Browser",
-    "url": "https://quickshares.online",
+    "url": "https://nitupatil.github.io/fileshare/",
     "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
     "description": "Free, secure, and anonymous file sharing. Transfer files up to 40MB with PIN protection and auto-deletion after 5 minutes.",
     "featureList": "End-to-end encryption, PIN protection, Auto-delete",
@@ -41,7 +42,7 @@
   }
   </script>
 
-  <link rel="icon" href="fileshare/assets/Logo.png" type="image/png">
+  <link rel="icon" href="assets/Logo.png" type="image/png">
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
@@ -93,9 +94,11 @@
       gap: 15px;
     }
     
+    /* FIXED LOGO STYLING */
     .logo-img { 
-      height: 70px; 
+      height: 80px; 
       width: auto;
+      object-fit: contain;
       filter: drop-shadow(0 0 15px rgba(99, 102, 241, 0.5)); 
       transition: transform 0.3s;
     }
@@ -244,7 +247,7 @@
   
   <header>
     <div class="logo-container">
-      <img src="fileshare/assets/Logo.png" alt="Quickshares Logo" class="logo-img">
+      <img src="assets/Logo.png" alt="Quickshares Logo" class="logo-img">
       <h1>Quickshares.online</h1>
     </div>
   </header>
@@ -487,7 +490,7 @@ verifyBtn.onclick = async () => {
   showFile(urlData.signedUrl, data[0].fake_name);
 };
 
-/* ================= IMPROVED SHOW FILE (No Guessing, Just Loading) ================= */
+/* ================= IMPROVED SHOW FILE (Auto-Detect Image vs PDF) ================= */
 function showFile(url, displayName) {
   downloadResult.innerHTML = `
     <div class="result-box result-success animate__animated animate__fadeIn">
