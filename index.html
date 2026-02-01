@@ -83,25 +83,24 @@
 
     .container { max-width: 1000px; margin: 0 auto; padding: 20px; position: relative; z-index: 10; }
 
-    /* Header Styling - UPDATED LAYOUT */
+    /* Header Styling */
     header { text-align: center; padding: 30px 0; margin-bottom: 20px; }
     
     .logo-container {
       display: flex;
-      flex-direction: row; /* Changed to row to sit side-by-side */
-      align-items: center; /* Centers them vertically */
+      flex-direction: row;
+      align-items: center;
       justify-content: center;
       gap: 15px;
     }
     
-    /* UPDATED LOGO SIZE */
     .logo-img { 
-      height: 50px; /* Reduced height to match text size */
+      height: 50px;
       width: auto;
       object-fit: contain;
       filter: drop-shadow(0 0 15px rgba(99, 102, 241, 0.5)); 
       transition: transform 0.3s;
-      margin-bottom: 0; /* Removed bottom margin */
+      margin-bottom: 0;
     }
     .logo-img:hover { transform: scale(1.05); }
 
@@ -110,7 +109,7 @@
       background: linear-gradient(135deg, #fff 0%, #cbd5e1 100%);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
       margin: 0; letter-spacing: -1px;
-      line-height: 1; /* Ensures good vertical alignment */
+      line-height: 1;
     }
 
     /* Menus */
@@ -195,7 +194,7 @@
     .pin-card { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; text-align: center; border: 1px solid var(--glass-border); }
     .pin-val { font-size: 1.8rem; font-weight: 800; letter-spacing: 3px; color: white; display: block; }
 
-    /* PREVIEW CONTAINER - FIXED FOR 100% VISIBILITY */
+    /* PREVIEW CONTAINER */
     .preview-container {
       margin: 20px auto; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2);
       width: 100%; height: 60vh; max-height: 500px; min-height: 300px;
@@ -361,6 +360,9 @@
 
 <script>
 /* ================= CONFIG ================= */
+// NOTE: For static HTML sites (Github Pages), Supabase keys MUST be public in the browser.
+// The 'anon' key below is designed to be public. Security is handled by Supabase Row Level Security (RLS).
+// If you remove these keys, the app will not work.
 const SUPABASE_URL = "https://uytqcdhutgqauxlghrrk.supabase.co";
 const SUPABASE_KEY = "sb_publishable_TdTt5mVFW0mwAmqVZ9qoxQ_6gtF4LW8";
 const MAX_SIZE = 40 * 1024 * 1024;
@@ -398,12 +400,20 @@ const fileInputLabel = document.getElementById('fileInputLabel');
 fileInput.onchange = () => {
   const f = fileInput.files[0];
   if (!f) return;
+  
   const mb = (f.size / 1024 / 1024).toFixed(2);
   const msgDiv = fileInputLabel.querySelector('.file-msg');
+  
+  // *** NEW: Auto-populate file name input ***
+  const nameInput = document.getElementById('fakeName');
+  if (nameInput) {
+    nameInput.value = f.name; // Sets the input value to file name
+  }
   
   if (f.size > MAX_SIZE) {
     msgDiv.innerHTML = `<span style="color:#ef4444; font-weight:bold;">Too Large (>40MB)</span>`;
     fileInput.value = "";
+    if (nameInput) nameInput.value = ""; // Clear name if rejected
   } else {
     msgDiv.innerHTML = `
       <span class="material-icons" style="font-size:42px; color:#4ade80;">check_circle</span>
@@ -492,7 +502,7 @@ verifyBtn.onclick = async () => {
   showFile(urlData.signedUrl, data[0].fake_name);
 };
 
-/* ================= IMPROVED SHOW FILE (Auto-Detect Image vs PDF) ================= */
+/* ================= PREVIEW LOGIC ================= */
 function showFile(url, displayName) {
   downloadResult.innerHTML = `
     <div class="result-box result-success animate__animated animate__fadeIn">
@@ -515,21 +525,18 @@ function showFile(url, displayName) {
       </div>
     </div>`;
 
-  // 1. Try to load as an image FIRST
   const img = new Image();
   img.src = url;
-  img.className = 'responsive-img'; // Uses object-fit: contain CSS
+  img.className = 'responsive-img';
   img.alt = "File Preview";
   
   img.onload = function() {
-    // It IS an image! Show it.
     const container = document.getElementById('mediaContainer');
-    container.innerHTML = ''; // Clear spinner
+    container.innerHTML = '';
     container.appendChild(img);
   };
 
   img.onerror = function() {
-    // It is NOT an image (PDF, Doc, etc). Switch to Iframe.
     const container = document.getElementById('mediaContainer');
     container.innerHTML = `<iframe src="${url}" class="responsive-iframe" title="Document Preview"></iframe>`;
   };
@@ -576,7 +583,6 @@ async function triggerDirectPrint(url) {
     iframe.style.left = '-9999px';
     document.body.appendChild(iframe);
 
-    // Try to detect type for printing
     const type = blob.type;
     if (type.startsWith('image/')) {
       iframe.contentDocument.write(`
