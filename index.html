@@ -27,21 +27,6 @@
   <meta property="og:image" content="https://nitupatil.github.io/fileshare/assets/Logo (2).webp">
   <meta property="twitter:image" content="https://nitupatil.github.io/fileshare/assets/Logo (2).webp">
 
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    "name": "Quickshares.online",
-    "applicationCategory": "UtilitiesApplication",
-    "operatingSystem": "Web Browser",
-    "url": "https://nitupatil.github.io/fileshare/",
-    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-    "description": "Free, secure, and anonymous file sharing. Transfer files up to 40MB with PIN protection and auto-deletion after 5 minutes.",
-    "featureList": "End-to-end encryption, PIN protection, Auto-delete",
-    "softwareRequirements": "Modern Web Browser"
-  }
-  </script>
-
   <link rel="icon" href="assets/Logo.png" type="image/png">
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -176,6 +161,17 @@
     }
     .file-drop-area input { position: absolute; left: 0; top: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
 
+    /* FILE LIST ITEM STYLES */
+    .file-item {
+      display: flex; justify-content: space-between; align-items: center;
+      background: rgba(255,255,255,0.05); padding: 10px 15px; border-radius: 8px;
+      margin-top: 10px; border: 1px solid rgba(255,255,255,0.05);
+    }
+    .file-item-info { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; max-width: 80%; }
+    .file-item-name { color: #4ade80; font-weight: bold; font-size: 0.95rem; }
+    .file-item-size { color: var(--text-muted); font-size: 0.8rem; }
+    .file-item-remove { background: none; border: none; color: #ef4444; cursor: pointer; display: flex; align-items: center; }
+
     .btn {
       width: 100%; padding: 16px; border: none; border-radius: 12px;
       font-size: 1rem; font-weight: 700; cursor: pointer; display: flex;
@@ -183,7 +179,7 @@
     }
     .btn-glow { background: linear-gradient(90deg, var(--primary), var(--secondary)); color: white; box-shadow: 0 0 15px rgba(99, 102, 241, 0.3); }
     .btn-glow:hover { box-shadow: 0 0 25px rgba(99, 102, 241, 0.5); transform: translateY(-2px); }
-    .btn-outline { background: transparent; border: 2px solid var(--glass-border); color: white; }
+    .btn-outline { background: transparent; border: 2px solid var(--glass-border); color: white; padding: 12px; }
     .btn-outline:hover { background: rgba(255,255,255,0.05); border-color: white; }
 
     .result-box { margin-top: 25px; padding: 20px; border-radius: 14px; animation: slideIn 0.5s ease; }
@@ -193,16 +189,6 @@
     .pin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
     .pin-card { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; text-align: center; border: 1px solid var(--glass-border); }
     .pin-val { font-size: 1.8rem; font-weight: 800; letter-spacing: 3px; color: white; display: block; }
-
-    /* PREVIEW CONTAINER */
-    .preview-container {
-      margin: 20px auto; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2);
-      width: 100%; height: 60vh; max-height: 500px; min-height: 300px;
-      background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;
-      overflow: hidden; position: relative;
-    }
-    .responsive-img { width: 100%; height: 100%; object-fit: contain; display: block; }
-    .responsive-iframe { width: 100%; height: 100%; border: none; }
 
     /* SEO TEXT SECTION */
     .seo-text {
@@ -235,7 +221,6 @@
       h1 { font-size: 2rem; }
       .glass-panel { padding: 20px; }
       .pin-grid { grid-template-columns: 1fr; }
-      .preview-container { height: 40vh; }
     }
   </style>
 </head>
@@ -248,7 +233,7 @@
   
   <header>
     <div class="logo-container">
-      <img src="assets/Logo.png" alt="Quickshares Logo" class="logo-img">
+      <img src="assets/Logo.png" alt="Quickshares Logo" class="logo-img" onerror="this.style.display='none'">
       <h1>Quickshares.online</h1>
     </div>
   </header>
@@ -283,20 +268,21 @@
       </h2>
 
       <div class="input-group">
-        <label>Select File (Max 40MB)</label>
+        <label>Select Files (Max 40MB Total)</label>
         <div class="file-drop-area" id="fileInputLabel">
-          <input type="file" id="fileInput">
-          <div class="file-msg">
+          <input type="file" id="fileInput" multiple>
+          <div class="file-msg" id="fileMsgPlaceholder">
             <span class="material-icons" style="font-size: 42px; color: var(--primary);">cloud_upload</span>
-            <span style="font-size: 1rem; margin-top:10px;">Tap to select file</span>
-            <span id="sizeInfo" style="font-size: 0.85rem; color: var(--text-muted); margin-top:5px;"></span>
+            <span style="font-size: 1rem; margin-top:10px; display:block;">Tap to select files</span>
+            <span id="sizeInfo" style="font-size: 0.85rem; color: var(--text-muted); margin-top:5px; display:block;">Up to 40MB total</span>
           </div>
         </div>
-      </div>
+        
+        <div id="fileListContainer"></div>
 
-      <div class="input-group">
-        <label>File Name (Visible to receiver)</label>
-        <input type="text" id="fakeName" placeholder="e.g. Photo.jpg">
+        <button id="addMoreBtn" class="btn btn-outline" style="display: none; margin-top: 15px;">
+          <span class="material-icons">add_circle_outline</span> Add More Files
+        </button>
       </div>
 
       <div class="input-group">
@@ -320,7 +306,7 @@
     <div class="glass-panel">
       <h2 style="margin-bottom: 25px; display:flex; align-items:center; gap:10px; color:white;">
         <span class="material-icons" style="color:var(--secondary);">vpn_key</span> 
-        Receive File
+        Receive Files
       </h2>
 
       <div class="input-group">
@@ -360,12 +346,9 @@
 
 <script>
 /* ================= CONFIG ================= */
-// NOTE: For static HTML sites (Github Pages), Supabase keys MUST be public in the browser.
-// The 'anon' key below is designed to be public. Security is handled by Supabase Row Level Security (RLS).
-// If you remove these keys, the app will not work.
 const SUPABASE_URL = "https://uytqcdhutgqauxlghrrk.supabase.co";
 const SUPABASE_KEY = "sb_publishable_TdTt5mVFW0mwAmqVZ9qoxQ_6gtF4LW8";
-const MAX_SIZE = 40 * 1024 * 1024;
+const MAX_SIZE = 40 * 1024 * 1024; // 40MB
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 /* ================= UI NAVIGATION ================= */
@@ -393,33 +376,76 @@ document.getElementById('backFromDownload').addEventListener('click', () => {
   mainMenu.style.display = 'flex';
 });
 
-/* ================= FILE HANDLING ================= */
-const fileInput = document.getElementById('fileInput');
-const fileInputLabel = document.getElementById('fileInputLabel');
+/* ================= MULTI-FILE HANDLING ================= */
+let selectedFilesArray = [];
 
-fileInput.onchange = () => {
-  const f = fileInput.files[0];
-  if (!f) return;
-  
-  const mb = (f.size / 1024 / 1024).toFixed(2);
-  const msgDiv = fileInputLabel.querySelector('.file-msg');
-  
-  // *** NEW: Auto-populate file name input ***
-  const nameInput = document.getElementById('fakeName');
-  if (nameInput) {
-    nameInput.value = f.name; // Sets the input value to file name
+const fileInput = document.getElementById('fileInput');
+const fileMsgPlaceholder = document.getElementById('fileMsgPlaceholder');
+const fileListContainer = document.getElementById('fileListContainer');
+const addMoreBtn = document.getElementById('addMoreBtn');
+
+// Redirect "Add More" button to open the hidden file input
+addMoreBtn.addEventListener('click', () => {
+  fileInput.click();
+});
+
+fileInput.addEventListener('change', () => {
+  const newFiles = Array.from(fileInput.files);
+  if (newFiles.length === 0) return;
+
+  // Calculate current and incoming sizes
+  const currentTotalSize = selectedFilesArray.reduce((sum, file) => sum + file.size, 0);
+  const incomingTotalSize = newFiles.reduce((sum, file) => sum + file.size, 0);
+
+  if (currentTotalSize + incomingTotalSize > MAX_SIZE) {
+    alert("Total size of all files cannot exceed 40MB.");
+    fileInput.value = ""; // Reset input
+    return;
   }
+
+  // Add files to our tracker array
+  selectedFilesArray = [...selectedFilesArray, ...newFiles];
   
-  if (f.size > MAX_SIZE) {
-    msgDiv.innerHTML = `<span style="color:#ef4444; font-weight:bold;">Too Large (>40MB)</span>`;
-    fileInput.value = "";
-    if (nameInput) nameInput.value = ""; // Clear name if rejected
-  } else {
-    msgDiv.innerHTML = `
-      <span class="material-icons" style="font-size:42px; color:#4ade80;">check_circle</span>
-      <div style="font-weight:bold; margin-top:5px;">${f.name}</div>
-      <div style="color:#4ade80; font-size:0.8rem;">${mb} MB</div>`;
+  // Clear the actual input so selecting the same file twice triggers 'change'
+  fileInput.value = ""; 
+  
+  renderFileList();
+});
+
+function renderFileList() {
+  fileListContainer.innerHTML = "";
+
+  if (selectedFilesArray.length === 0) {
+    fileMsgPlaceholder.style.display = "block";
+    addMoreBtn.style.display = "none";
+    return;
   }
+
+  fileMsgPlaceholder.style.display = "none";
+  addMoreBtn.style.display = "flex";
+
+  selectedFilesArray.forEach((file, index) => {
+    const mbSize = (file.size / 1024 / 1024).toFixed(2);
+    
+    const fileItem = document.createElement("div");
+    fileItem.className = "file-item";
+    fileItem.innerHTML = `
+      <div class="file-item-info">
+        <div class="file-item-name">${file.name}</div>
+        <div class="file-item-size">${mbSize} MB</div>
+      </div>
+      <button class="file-item-remove" onclick="removeFile(${index})">
+        <span class="material-icons">delete</span>
+      </button>
+    `;
+    fileListContainer.appendChild(fileItem);
+  });
+}
+
+// Global function to remove file from list
+window.removeFile = (index) => {
+  selectedFilesArray.splice(index, 1);
+  renderFileList();
 };
 
 /* ================= UPLOAD LOGIC ================= */
@@ -427,36 +453,58 @@ const uploadBtn = document.getElementById('uploadBtn');
 const uploadResult = document.getElementById('uploadResult');
 
 uploadBtn.onclick = async () => {
-  const file = fileInput.files[0];
-  const fake = document.getElementById('fakeName').value.trim();
   const pin = document.getElementById('pinInput').value.trim();
 
-  if (!file || !fake || !/^\d{4}$/.test(pin)) {
-    uploadResult.innerHTML = `<div class="result-box result-error">Please fill all fields & 4-digit PIN.</div>`;
+  if (selectedFilesArray.length === 0 || !/^\d{4}$/.test(pin)) {
+    uploadResult.innerHTML = `<div class="result-box result-error">Please select files & enter a 4-digit PIN.</div>`;
     return;
   }
 
   uploadBtn.innerHTML = `<div class="spinner"></div> Uploading...`;
   uploadBtn.disabled = true;
 
+  // Generate 1 OTP for the entire batch
   const otp = Math.floor(1000 + Math.random() * 9000).toString();
-  const path = `files/${Date.now()}_${file.name}`;
   const expiresAt = new Date(Date.now() + 5 * 60000).toISOString();
+  
+  let hasError = false;
 
-  const { error: upErr } = await supabaseClient.storage.from("secure-files").upload(path, file);
-  if (upErr) {
-    handleError(uploadResult, upErr.message, uploadBtn, 'Encrypt & Send');
+  // Loop through and upload all files
+  for (const file of selectedFilesArray) {
+    const path = `files/${Date.now()}_${file.name}`;
+
+    const { error: upErr } = await supabaseClient.storage.from("secure-files").upload(path, file);
+    if (upErr) {
+      hasError = true;
+      console.error("Storage Error:", upErr);
+      break;
+    }
+
+    const { error: dbErr } = await supabaseClient.rpc("insert_file", {
+      p_file_path: path, 
+      p_fake_name: file.name, // Using actual file name
+      p_pin: pin, 
+      p_otp: otp, 
+      p_expires_at: expiresAt
+    });
+
+    if (dbErr) {
+      hasError = true;
+      console.error("Database Error:", dbErr);
+      break;
+    }
+  }
+
+  if (hasError) {
+    uploadResult.innerHTML = `<div class="result-box result-error">An error occurred while uploading.</div>`;
+    uploadBtn.innerHTML = `<span class="material-icons">lock</span> Encrypt & Send`;
+    uploadBtn.disabled = false;
     return;
   }
 
-  const { error: dbErr } = await supabaseClient.rpc("insert_file", {
-    p_file_path: path, p_fake_name: fake, p_pin: pin, p_otp: otp, p_expires_at: expiresAt
-  });
-
-  if (dbErr) {
-    handleError(uploadResult, dbErr.message, uploadBtn, 'Encrypt & Send');
-    return;
-  }
+  // Clear list on success
+  selectedFilesArray = [];
+  renderFileList();
 
   uploadResult.innerHTML = `
     <div class="result-box result-success">
@@ -467,150 +515,73 @@ uploadBtn.onclick = async () => {
       </div>
       <p style="margin-top:10px; font-size:0.8rem; opacity:0.8;">Expires in 5 mins.</p>
     </div>`;
+    
   uploadBtn.innerHTML = `<span class="material-icons">check</span> Sent`;
-  setTimeout(() => { uploadBtn.innerHTML = `<span class="material-icons">lock</span> Encrypt & Send`; uploadBtn.disabled = false; }, 4000);
+  setTimeout(() => { 
+    uploadBtn.innerHTML = `<span class="material-icons">lock</span> Encrypt & Send`; 
+    uploadBtn.disabled = false; 
+    document.getElementById('pinInput').value = '';
+  }, 4000);
 };
 
-/* ================= VERIFY LOGIC ================= */
+/* ================= COMPLETED VERIFY LOGIC ================= */
 const verifyBtn = document.getElementById('verifyBtn');
 const downloadResult = document.getElementById('downloadResult');
 
 verifyBtn.onclick = async () => {
-  const pin = document.getElementById('dPin').value;
-  const otp = document.getElementById('dOtp').value;
+  const pin = document.getElementById('dPin').value.trim();
+  const otp = document.getElementById('dOtp').value.trim();
 
   if (!/^\d{4}$/.test(pin) || !/^\d{4}$/.test(otp)) {
-    downloadResult.innerHTML = `<div class="result-box result-error">Invalid PIN/OTP format.</div>`;
+    downloadResult.innerHTML = `<div class="result-box result-error">Enter valid 4-digit PIN & OTP.</div>`;
     return;
   }
 
-  verifyBtn.innerHTML = `<div class="spinner"></div> Decrypting...`;
+  verifyBtn.innerHTML = `<div class="spinner"></div> Verifying...`;
   verifyBtn.disabled = true;
 
-  const { data, error } = await supabaseClient.rpc("verify_access", { p_pin: pin, p_otp: otp });
-
-  if (error || !data || data.length === 0) {
-    handleError(downloadResult, "Invalid Credentials or Expired.", verifyBtn, 'Decrypt & View');
-    return;
-  }
-
-  const { data: urlData } = await supabaseClient.storage.from("secure-files").createSignedUrl(data[0].file_path, 120);
-
-  verifyBtn.innerHTML = `<span class="material-icons">no_encryption</span> Decrypt & View`;
-  verifyBtn.disabled = false;
-  
-  showFile(urlData.signedUrl, data[0].fake_name);
-};
-
-/* ================= PREVIEW LOGIC ================= */
-function showFile(url, displayName) {
-  downloadResult.innerHTML = `
-    <div class="result-box result-success animate__animated animate__fadeIn">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-        <h3 style="color:#4ade80;">File Ready</h3>
-        <span style="font-size:0.8rem; opacity:0.7;">${displayName}</span>
-      </div>
-      
-      <div class="preview-container" id="mediaContainer">
-        <div class="spinner"></div>
-      </div>
-      
-      <div style="display:grid; gap:10px; grid-template-columns: 1fr 1fr;">
-        <button class="btn btn-glow" onclick="downloadFile('${url}','${displayName}')">
-          <span class="material-icons">download</span> Save
-        </button>
-        <button class="btn btn-outline" onclick="triggerDirectPrint('${url}')">
-          <span class="material-icons">print</span> Print
-        </button>
-      </div>
-    </div>`;
-
-  const img = new Image();
-  img.src = url;
-  img.className = 'responsive-img';
-  img.alt = "File Preview";
-  
-  img.onload = function() {
-    const container = document.getElementById('mediaContainer');
-    container.innerHTML = '';
-    container.appendChild(img);
-  };
-
-  img.onerror = function() {
-    const container = document.getElementById('mediaContainer');
-    container.innerHTML = `<iframe src="${url}" class="responsive-iframe" title="Document Preview"></iframe>`;
-  };
-}
-
-function handleError(container, msg, btn, btnText) {
-  container.innerHTML = `<div class="result-box result-error">${msg}</div>`;
-  btn.innerHTML = `<span class="material-icons">error</span> Retry`;
-  btn.disabled = false;
-  setTimeout(() => btn.innerHTML = btnText, 3000);
-}
-
-async function downloadFile(url, name) {
-  const btn = event.target.closest('button');
-  btn.innerHTML = `<div class="spinner"></div>`;
   try {
-    const res = await fetch(url);
-    const blob = await res.blob();
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = name;
-    link.click();
-    btn.innerHTML = `<span class="material-icons">check</span> Saved`;
-  } catch (e) {
-    btn.innerHTML = `Error`;
-  }
-  setTimeout(() => btn.innerHTML = `<span class="material-icons">download</span> Save`, 2000);
-}
+    // Assuming you have a table named 'files'. If your table has a different name, alter it below.
+    const { data, error } = await supabaseClient
+      .from('files') 
+      .select('*')
+      .eq('pin', pin)
+      .eq('otp', otp)
+      .gt('expires_at', new Date().toISOString());
 
-/* ================= DIRECT PRINT FUNCTION ================= */
-async function triggerDirectPrint(url) {
-  const btn = event.target.closest('button');
-  const originalText = btn.innerHTML;
-  btn.innerHTML = `<div class="spinner"></div>`;
-  
-  try {
-    const response = await fetch(url);
-    const blob = await response.blob();
-    const blobUrl = URL.createObjectURL(blob);
-
-    const iframe = document.createElement('iframe');
-    iframe.style.position = 'absolute';
-    iframe.style.top = '-9999px';
-    iframe.style.left = '-9999px';
-    document.body.appendChild(iframe);
-
-    const type = blob.type;
-    if (type.startsWith('image/')) {
-      iframe.contentDocument.write(`
-        <html><body style="margin:0; display:flex; justify-content:center; align-items:center; height:100vh;">
-          <img src="${blobUrl}" style="max-width:100%; max-height:100%; object-fit:contain;">
-        </body></html>`);
-      iframe.contentDocument.close();
-    } else {
-      iframe.src = blobUrl;
+    if (error || !data || data.length === 0) {
+      downloadResult.innerHTML = `<div class="result-box result-error">Invalid PIN/OTP or files expired.</div>`;
+      resetVerifyButton();
+      return;
     }
 
-    iframe.onload = function() {
-      setTimeout(() => {
-        iframe.contentWindow.focus();
-        iframe.contentWindow.print();
-        setTimeout(() => {
-          document.body.removeChild(iframe);
-          URL.revokeObjectURL(blobUrl);
-          btn.innerHTML = originalText;
-        }, 1000);
-      }, 500); 
-    };
+    // Build download links for all files found
+    let linksHtml = `<h3 style="margin-bottom: 15px; color: #4ade80;">Files Ready:</h3>`;
+    linksHtml += `<div style='display:flex; flex-direction:column; gap:10px;'>`;
     
-  } catch (error) {
-    console.error("Print Error:", error);
-    btn.innerHTML = `<span class="material-icons">error</span> Error`;
-    setTimeout(() => btn.innerHTML = originalText, 2000);
+    for (const record of data) {
+      // Get secure public URL from Supabase Storage
+      const { data: urlData } = supabaseClient.storage.from('secure-files').getPublicUrl(record.file_path);
+      
+      linksHtml += `
+        <a href="${urlData.publicUrl}" target="_blank" class="btn btn-outline" style="text-decoration: none;">
+          <span class="material-icons">download</span> Download ${record.fake_name}
+        </a>`;
+    }
+    linksHtml += `</div>`;
+
+    downloadResult.innerHTML = `<div class="result-box result-success">${linksHtml}</div>`;
+    resetVerifyButton();
+
+  } catch (err) {
+    downloadResult.innerHTML = `<div class="result-box result-error">Error connecting to server.</div>`;
+    resetVerifyButton();
   }
+};
+
+function resetVerifyButton() {
+  verifyBtn.innerHTML = `<span class="material-icons">no_encryption</span> Decrypt & View`;
+  verifyBtn.disabled = false;
 }
 </script>
 
